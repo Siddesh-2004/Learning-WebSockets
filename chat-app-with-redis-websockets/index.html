@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <input type="text" id="messageInput">
+        <button onclick="sendMessage()">Send</button>   
+        <div id="response">
+            
+        </div>
+    </div>
+    <script>
+        const {port}=window.location; 
+        const connection=new WebSocket(`ws://localhost:${port}`)
+        connection.onopen=()=>{
+            
+            connection.onmessage=(message)=>{
+               showResponse(message.data);
+            }
+        }
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            connection.send(JSON.stringify({ type: "request", data: messageInput.value }));
+            messageInput.value = '';
+        }   
+        function showResponse(message) {    
+            response=JSON.parse(message);
+            console.log(response);
+            message=response.data.data;
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML += `<p>${message}</p>`;
+        }
+    </script>
+</body>
+</html>
